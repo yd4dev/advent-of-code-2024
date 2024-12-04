@@ -59,5 +59,16 @@ func main() {
 
 	fmt.Println(int(sum))
 
+	var similarity int64 = 0
+	for i := range len(a) {
+		for j := range len(b) {
+			if a[i] == b[j] {
+				similarity += a[i]
+			}
+		}
+	}
+
+	fmt.Println(similarity)
+
 	defer file.Close()
 }

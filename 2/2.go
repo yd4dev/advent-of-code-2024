@@ -11,15 +11,20 @@ import (
 )
 
 func main() {
-
 	reader, file := util.OpenFile("input.txt")
 
+	count := checkAllLines(reader, false)
+
+	fmt.Printf("Answer for Part 1: %v\n", count)
+
+	file.Close()
+
+	reader, file = util.OpenFile("input.txt")
 	defer file.Close()
 
-	count := checkAllLines(reader)
+	count = checkAllLines(reader, true)
 
-	fmt.Printf("Answer for Part 1: %v", count)
-
+	fmt.Printf("Answer for Part 2: %v\n", count)
 }
 
 func readAndParseLine(reader *bufio.Reader) ([]int64, error) {
@@ -62,7 +67,7 @@ func checkReport(report []int64) bool {
 	return valid
 }
 
-func checkAllLines(r *bufio.Reader) int {
+func checkAllLines(r *bufio.Reader, problemDampener bool) int {
 	count := 0
 
 	for {
@@ -70,6 +75,18 @@ func checkAllLines(r *bufio.Reader) int {
 		numbers, eof := readAndParseLine(r)
 
 		valid := checkReport(numbers)
+
+		if problemDampener && !valid {
+			for i := 0; i < len(numbers); i++ {
+				tmp := make([]int64, len(numbers))
+				copy(tmp, numbers)
+				check := checkReport(append(tmp[:i], tmp[i+1:]...))
+				if check {
+					valid = true
+					break
+				}
+			}
+		}
 
 		if valid {
 			count++

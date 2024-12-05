@@ -11,18 +11,41 @@ import (
 	util "github.com/yd4dev/advent-of-code-2024"
 )
 
+var mulEnabled = true
+
 func main() {
 	reader, file := util.OpenFile("input.txt")
 	defer file.Close()
+
+	fmt.Printf("Answer for Part 1: %v\n", loop(reader, false))
+
+	reader, file = util.OpenFile("input.txt")
+	defer file.Close()
+
+	mulEnabled = true
+
+	fmt.Printf("Answer for Part 2: %v\n", loop(reader, true))
+}
+
+func loop(reader *bufio.Reader, useMulEnabled bool) int64 {
 	var sum int64 = 0
 	for {
-		sum += parseMul(reader)
-		_, err := reader.Peek(1)
-		if err != nil {
-			break
+		bytes, _ := reader.Peek(1)
+		if bytes[0] == 'd' {
+			mulEnabled = parseDo(reader)
+		} else {
+			if mulEnabled || !useMulEnabled {
+				sum += parseMul(reader)
+			} else {
+				parseMul(reader)
+			}
+			_, err := reader.Peek(1)
+			if err != nil {
+				break
+			}
 		}
 	}
-	fmt.Printf("Answer for Part 1: %v\n", sum)
+	return sum
 }
 
 func parseMul(reader *bufio.Reader) int64 {
@@ -55,6 +78,47 @@ func parseMul(reader *bufio.Reader) int64 {
 	}
 	return mul1 * mul2
 
+}
+
+func parseDo(reader *bufio.Reader) bool {
+	if !accept(reader, 'd') {
+		return mulEnabled
+	}
+
+	if !accept(reader, 'o') {
+		return mulEnabled
+	}
+
+	rune, _, _ := reader.ReadRune()
+
+	switch rune {
+	case '(':
+		if !accept(reader, ')') {
+			reader.UnreadRune()
+			return mulEnabled
+		}
+		return true
+	case 'n':
+		if !accept(reader, '\'') {
+			reader.UnreadRune()
+			return mulEnabled
+		}
+		if !accept(reader, 't') {
+			reader.UnreadRune()
+			return mulEnabled
+		}
+		if !accept(reader, '(') {
+			reader.UnreadRune()
+			return mulEnabled
+		}
+		if !accept(reader, ')') {
+			reader.UnreadRune()
+			return mulEnabled
+		}
+		return false
+	default:
+		return mulEnabled
+	}
 }
 
 func accept(reader *bufio.Reader, char rune) bool {

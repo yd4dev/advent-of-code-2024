@@ -17,6 +17,7 @@ func main() {
 	list := parseFile()
 	sum := checkHorizontal(list) + checkVertical(list) + checkDiagonal(list)
 	fmt.Printf("Answer for Part 1: %v\n", sum)
+	fmt.Printf("Answer for Part 2: %v\n", checkXmas(list))
 }
 
 func parseLine(line string) []rune {
@@ -78,6 +79,21 @@ func checkDiagonal(list [][]rune) int {
 						count++
 					}
 				}
+			}
+		}
+	}
+	return count
+}
+
+func checkXmas(list [][]rune) int {
+	count := 0
+	for i := 0; i < len(list)-2; i++ {
+		for j := 0; j < len(list[i])-2; j++ {
+			if (list[i][j] == 'M' && list[i+1][j+1] == 'A' && list[i+2][j+2] == 'S' && list[i][j+2] == 'M' && list[i+2][j] == 'S') ||
+				(list[i][j] == 'M' && list[i+1][j+1] == 'A' && list[i+2][j+2] == 'S' && list[i][j+2] == 'S' && list[i+2][j] == 'M') ||
+				(list[i][j] == 'S' && list[i+1][j+1] == 'A' && list[i+2][j+2] == 'M' && list[i][j+2] == 'M' && list[i+2][j] == 'S') ||
+				(list[i][j] == 'S' && list[i+1][j+1] == 'A' && list[i+2][j+2] == 'M' && list[i][j+2] == 'S' && list[i+2][j] == 'M') {
+				count++
 			}
 		}
 	}
